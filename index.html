@@ -176,13 +176,13 @@
     <section class="group">
       <h2>Payment</h2>
       <div class="payment-box">
-        <div class="fee" id="feeLabel">$0</div>
-        <p style="margin:4px 0 0;font-size:14px;">registration fee for this season</p>
+        <div class="fee" id="feeLabel">Select an age group above</div>
+        <p style="margin:4px 0 0;font-size:14px;" id="feeSubtext"></p>
         <div class="zelle-line">
           <span id="zelleTargetLabel">zelle@example.com</span>
           <button type="button" class="copy-btn" id="copyZelleBtn">Copy</button>
         </div>
-        <p class="note">Send this amount via Zelle to the contact above, using your <strong>player's full name</strong> in the memo. Then enter the confirmation number Zelle gave you below — we'll verify and confirm by email.</p>
+        <p class="note">Send this amount via Zelle to the contact above, using your <strong>player's full name</strong> in the memo. Then enter the confirmation number Zelle gave you below — Registration will not be be completed without full payment.</p>
       </div>
       <label>Zelle confirmation number (leave blank if paying later)</label>
       <input id="zelleRef" placeholder="e.g. AB12CD34">
@@ -196,7 +196,7 @@
   <div class="success" id="successPanel">
     <div class="mark">⚽</div>
     <h2>You're registered</h2>
-    <p id="successText">Thanks! We've received your player's registration. If you sent a Zelle payment, we'll confirm it by email once verified.</p>
+    <p id="successText">Thanks! We've received your player's registration. Registration will be completed upon receiving full payment.</p>
   </div>
 </div>
 
@@ -206,26 +206,58 @@
     clubName: "Melvindale Soccer Club",
     season: "Fall 2026 Season",
     tagline: "Home of the Cardinals. Register your player and take care of the registration fee — takes about 3 minutes.",
-    fee: "$150",
-    zelleTarget: "melvindalesoccerclub@gmail.com",
+    // Fee by age group — edit any amount here, or add/remove age groups.
+    // NOTE: you mentioned U12 for both the $75 and $50 tiers — I've put it
+    // under $75 and guessed U8 for the $50 tier below. Double check / edit.
+    fees: {
+      "U19": 100,
+      "U16": 75,
+      "U14": 75,
+      "U12": 75,
+      "U10": 50,
+      "U8": 50,
+      "U6": 50
+    },
+    zelleTarget: "treasurer@melvindalesoccer.org",
     ageGroups: ["U6", "U8", "U10", "U12", "U14", "U16", "U19"],
     // Paste the Web app URL you get from deploying apps-script.gs (see SETUP-INSTRUCTIONS.md)
-    scriptUrl: "https://script.google.com/macros/s/AKfycbxJv6J0OqvNAqIjXN8-rHtj5BXyS3Pm6RWcHQXqaR1As1yDdLEPE-xjEsD_-KdRF8MZ/exec"
+    scriptUrl: "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE"
   };
   // -----------------------------------------
 
   document.getElementById('seasonLabel').textContent = CONFIG.season;
   document.getElementById('clubNameLabel').textContent = CONFIG.clubName;
   document.getElementById('taglineLabel').textContent = CONFIG.tagline;
-  document.getElementById('feeLabel').textContent = CONFIG.fee;
   document.getElementById('zelleTargetLabel').textContent = CONFIG.zelleTarget;
 
   const ageSelect = document.getElementById('ageGroup');
+  const feeLabel = document.getElementById('feeLabel');
+  const feeSubtext = document.getElementById('feeSubtext');
+
   CONFIG.ageGroups.forEach(g => {
     const opt = document.createElement('option');
     opt.value = g; opt.textContent = g;
     ageSelect.appendChild(opt);
   });
+
+  function currentFee() {
+    const group = ageSelect.value;
+    return CONFIG.fees[group];
+  }
+
+  function updateFeeDisplay() {
+    const fee = currentFee();
+    if (fee == null) {
+      feeLabel.textContent = 'Select an age group above';
+      feeSubtext.textContent = '';
+    } else {
+      feeLabel.textContent = '$' + fee;
+      feeSubtext.textContent = 'registration fee for ' + ageSelect.value + ' this season';
+    }
+  }
+
+  ageSelect.addEventListener('change', updateFeeDisplay);
+  updateFeeDisplay();
 
   document.getElementById('copyZelleBtn').addEventListener('click', () => {
     navigator.clipboard?.writeText(CONFIG.zelleTarget).then(() => {
@@ -244,6 +276,11 @@
     e.preventDefault();
     if (!form.checkValidity()) {
       form.reportValidity();
+      return;
+    }
+    if (currentFee() == null) {
+      errorBox.textContent = "Please select a valid age group so we can show the correct fee.";
+      errorBox.style.display = 'block';
       return;
     }
     if (CONFIG.scriptUrl.includes('PASTE_YOUR')) {
@@ -267,7 +304,7 @@
       emergencyContact: document.getElementById('emergencyContact').value.trim(),
       emergencyPhone: document.getElementById('emergencyPhone').value.trim(),
       medicalNotes: document.getElementById('medicalNotes').value.trim(),
-      fee: CONFIG.fee,
+      fee: '$' + currentFee(),
       paymentMethod: 'Zelle',
       zelleRef: document.getElementById('zelleRef').value.trim(),
     };
