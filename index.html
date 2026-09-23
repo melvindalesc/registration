@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Melvindale Soccer Club — Registration</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#A30E1F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pitch:#A30E1F;
+    --pitch-light:#D42B32;
+    --chalk:#F6F3EE;
+    --ink:#1A1310;
+    --gold:#E3A63C;
+    --line:#E4DCD2;
+    --danger:#A30E1F;
+    --radius:14px;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{margin:0;padding:0;background:var(--chalk);color:var(--ink);font-family:'Work Sans',sans-serif;}
+  h1,h2,h3{font-family:'Big Shoulders Display',sans-serif;font-weight:800;letter-spacing:.01em;margin:0;}
+  p{line-height:1.5;}
+  a{color:var(--pitch-light);}
+
+  .hero{
+    background:
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0 40px, transparent 40px 80px),
+      linear-gradient(160deg, var(--pitch) 0%, var(--pitch-light) 100%);
+    color:var(--chalk);
+    padding:calc(env(safe-area-inset-top,0px) + 40px) 24px 36px;
+  }
+  .hero .eyebrow{font-size:14px;opacity:.75;margin-bottom:6px;}
+  .hero h1{font-size:clamp(34px,9vw,46px);line-height:0.98;text-transform:uppercase;}
+  .hero p.tag{margin-top:10px;max-width:34ch;color:#F3D9D9;font-size:15px;}
+
+  .wrap{max-width:560px;margin:0 auto;padding:0 20px 60px;}
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 20px;
+    margin-top:-22px;
+    position:relative;
+    z-index:2;
+  }
+  section.group{margin-top:28px;}
+  section.group h2{font-size:22px;text-transform:uppercase;color:var(--pitch);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px;}
+
+  label{display:block;font-size:13.5px;font-weight:600;margin:14px 0 6px;}
+  label .req{color:var(--danger);}
+  input,select,textarea{
+    width:100%;
+    font:inherit;
+    font-size:16px; /* prevents iOS zoom-on-focus */
+    padding:11px 12px;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    background:#fff;
+    color:var(--ink);
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--pitch-light);outline-offset:1px;border-color:var(--pitch-light);}
+  textarea{min-height:70px;resize:vertical;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+  .payment-box{
+    background:var(--chalk);
+    border:1.5px dashed var(--pitch-light);
+    border-radius:12px;
+    padding:16px;
+    margin-top:16px;
+  }
+  .payment-box .fee{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:30px;color:var(--pitch);}
+  .payment-box .zelle-line{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px;font-weight:600;}
+  .copy-btn{border:1px solid var(--pitch);background:#fff;color:var(--pitch);font-size:13px;font-weight:700;padding:6px 10px;border-radius:7px;cursor:pointer;}
+  .copy-btn:active{transform:scale(0.97);}
+
+  .submit-btn{
+    width:100%;
+    margin-top:26px;
+    background:var(--gold);
+    color:var(--ink);
+    border:none;
+    border-radius:12px;
+    padding:15px;
+    font-size:17px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .submit-btn:active{transform:scale(0.99);}
+  .submit-btn:disabled{opacity:.6;cursor:default;}
+
+  .note{font-size:13px;color:#6B5B54;margin-top:8px;}
+  .error{color:var(--danger);font-size:14px;margin-top:10px;display:none;}
+
+  .success{display:none;text-align:center;padding:60px 24px;}
+  .success h2{color:var(--pitch);font-size:30px;text-transform:uppercase;}
+  .success p{max-width:38ch;margin:14px auto 0;color:#4A3B36;}
+  .success .mark{font-size:52px;}
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --chalk:#1B1512;
+      --ink:#F3ECE5;
+      --line:#3B2E28;
+    }
+    :root:not([data-theme="light"]) .card{background:#251C18;}
+    :root:not([data-theme="light"]) input,
+    :root:not([data-theme="light"]) select,
+    :root:not([data-theme="light"]) textarea{background:#15100D;color:#F3ECE5;}
+    :root:not([data-theme="light"]) .payment-box{background:#15100D;}
+    :root:not([data-theme="light"]) .zelle-line{background:#251C18;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <img src="logo.png" alt="" width="56" height="56" style="border-radius:50%;display:block;margin-bottom:14px;">
+  <div class="eyebrow" id="seasonLabel">SEASON</div>
+  <h1 id="clubNameLabel">Club Name</h1>
+  <p class="tag" id="taglineLabel">Register your player and take care of the registration fee — takes about 3 minutes.</p>
+</div>
+
+<div class="wrap">
+  <form class="card" id="regForm">
+
+    <section class="group">
+      <h2>Player</h2>
+      <label>Player first name <span class="req">*</span></label>
+      <input required id="playerFirstName" autocomplete="given-name">
+      <label>Player last name <span class="req">*</span></label>
+      <input required id="playerLastName" autocomplete="family-name">
+      <div class="row2">
+        <div>
+          <label>Date of birth <span class="req">*</span></label>
+          <input required id="dob" type="date">
+        </div>
+        <div>
+          <label>Age group <span class="req">*</span></label>
+          <select required id="ageGroup"><option value="" disabled selected>Select</option></select>
+        </div>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Parent / Guardian</h2>
+      <label>Full name <span class="req">*</span></label>
+      <input required id="parentName" autocomplete="name">
+      <label>Email <span class="req">*</span></label>
+      <input required id="email" type="email" autocomplete="email">
+      <label>Phone <span class="req">*</span></label>
+      <input required id="phone" type="tel" autocomplete="tel">
+    </section>
+
+    <section class="group">
+      <h2>Emergency contact</h2>
+      <label>Name <span class="req">*</span></label>
+      <input required id="emergencyContact">
+      <label>Phone <span class="req">*</span></label>
+      <input required id="emergencyPhone" type="tel">
+      <label>Medical notes (allergies, conditions — optional)</label>
+      <textarea id="medicalNotes"></textarea>
+    </section>
+
+    <section class="group">
+      <h2>Payment</h2>
+      <div class="payment-box">
+        <div class="fee" id="feeLabel">$0</div>
+        <p style="margin:4px 0 0;font-size:14px;">registration fee for this season</p>
+        <div class="zelle-line">
+          <span id="zelleTargetLabel">zelle@example.com</span>
+          <button type="button" class="copy-btn" id="copyZelleBtn">Copy</button>
+        </div>
+        <p class="note">Send this amount via Zelle to the contact above, using your <strong>player's full name</strong> in the memo. Then enter the confirmation number Zelle gave you below — we'll verify and confirm by email.</p>
+      </div>
+      <label>Zelle confirmation number (leave blank if paying later)</label>
+      <input id="zelleRef" placeholder="e.g. AB12CD34">
+    </section>
+
+    <div class="error" id="formError">Please fill in all required fields.</div>
+    <button class="submit-btn" id="submitBtn" type="submit">Submit registration</button>
+    <p class="note" style="text-align:center;">You can also pay later — just complete registration now.</p>
+  </form>
+
+  <div class="success" id="successPanel">
+    <div class="mark">⚽</div>
+    <h2>You're registered</h2>
+    <p id="successText">Thanks! We've received your player's registration. If you sent a Zelle payment, we'll confirm it by email once verified.</p>
+  </div>
+</div>
+
+<script>
+  // ---- EDIT THIS CONFIG FOR YOUR CLUB ----
+  const CONFIG = {
+    clubName: "Melvindale Soccer Club",
+    season: "Fall 2026 Season",
+    tagline: "Home of the Cardinals. Register your player and take care of the registration fee — takes about 3 minutes.",
+    fee: "$150",
+    zelleTarget: "melvindalesoccerclub@gmail.com",
+    ageGroups: ["U6", "U8", "U10", "U12", "U14", "U16", "U19"],
+    // Paste the Web app URL you get from deploying apps-script.gs (see SETUP-INSTRUCTIONS.md)
+    scriptUrl: "https://script.google.com/macros/s/AKfycbxJv6J0OqvNAqIjXN8-rHtj5BXyS3Pm6RWcHQXqaR1As1yDdLEPE-xjEsD_-KdRF8MZ/exec"
+  };
+  // -----------------------------------------
+
+  document.getElementById('seasonLabel').textContent = CONFIG.season;
+  document.getElementById('clubNameLabel').textContent = CONFIG.clubName;
+  document.getElementById('taglineLabel').textContent = CONFIG.tagline;
+  document.getElementById('feeLabel').textContent = CONFIG.fee;
+  document.getElementById('zelleTargetLabel').textContent = CONFIG.zelleTarget;
+
+  const ageSelect = document.getElementById('ageGroup');
+  CONFIG.ageGroups.forEach(g => {
+    const opt = document.createElement('option');
+    opt.value = g; opt.textContent = g;
+    ageSelect.appendChild(opt);
+  });
+
+  document.getElementById('copyZelleBtn').addEventListener('click', () => {
+    navigator.clipboard?.writeText(CONFIG.zelleTarget).then(() => {
+      const btn = document.getElementById('copyZelleBtn');
+      const old = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(() => btn.textContent = old, 1200);
+    }).catch(() => {});
+  });
+
+  const form = document.getElementById('regForm');
+  const errorBox = document.getElementById('formError');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    if (CONFIG.scriptUrl.includes('PASTE_YOUR')) {
+      errorBox.textContent = "Setup incomplete: the club hasn't connected this form to its spreadsheet yet.";
+      errorBox.style.display = 'block';
+      return;
+    }
+
+    errorBox.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    const payload = {
+      playerFirstName: document.getElementById('playerFirstName').value.trim(),
+      playerLastName: document.getElementById('playerLastName').value.trim(),
+      dob: document.getElementById('dob').value,
+      ageGroup: document.getElementById('ageGroup').value,
+      parentName: document.getElementById('parentName').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      emergencyContact: document.getElementById('emergencyContact').value.trim(),
+      emergencyPhone: document.getElementById('emergencyPhone').value.trim(),
+      medicalNotes: document.getElementById('medicalNotes').value.trim(),
+      fee: CONFIG.fee,
+      paymentMethod: 'Zelle',
+      zelleRef: document.getElementById('zelleRef').value.trim(),
+    };
+
+    try {
+      // no-cors: Apps Script web apps don't return CORS headers, so the
+      // response can't be read — but the write still happens server-side.
+      await fetch(CONFIG.scriptUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      form.style.display = 'none';
+      document.getElementById('successPanel').style.display = 'block';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    } catch (err) {
+      errorBox.textContent = "Something went wrong submitting your registration. Please check your connection and try again.";
+      errorBox.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit registration';
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "Melvindale Soccer Club Registration",
+  "short_name": "MSC Register",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#A30E1F",
+  "theme_color": "#A30E1F",
+  "icons": [
+    { "src": "logo.png", "sizes": "1440x1440", "type": "image/png", "purpose": "any" },
+    { "src": "logo.png", "sizes": "1440x1440", "type": "image/png", "purpose": "maskable" }
+  ]
+}
