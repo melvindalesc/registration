@@ -30,6 +30,10 @@ const HEADERS = [
   "Payment Method",
   "Zelle Confirmation #",
   "Payment Status",
+  "Waiver Agreed",
+  "Waiver E-Signature",
+  "Waiver Agreed At",
+  "Photo/Media Consent",
 ];
 
 function getSheet_() {
@@ -67,6 +71,10 @@ function doPost(e) {
       data.paymentMethod || "",
       data.zelleRef || "",
       data.zelleRef ? "Reported — needs verification" : "Not yet paid",
+      data.waiverAgreed || "No",
+      data.waiverSignature || "",
+      data.waiverAgreedAt || "",
+      data.photoConsent || "No",
     ]);
 
     return ContentService

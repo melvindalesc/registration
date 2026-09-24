@@ -100,6 +100,19 @@
   .submit-btn:active{transform:scale(0.99);}
   .submit-btn:disabled{opacity:.6;cursor:default;}
 
+  .waiver-box{
+    max-height:420px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    background:#EDEAE4;
+  }
+  .waiver-box img{display:block;width:100%;height:auto;border-bottom:1px solid var(--line);}
+  .waiver-box img:last-of-type{border-bottom:none;}
+  #waiverScrollHint{transition:opacity .2s;}
+  #waiverScrollHint.hidden{opacity:0;height:0;margin:0;overflow:hidden;}
+
   .note{font-size:13px;color:#6B5B54;margin-top:8px;}
   .error{color:var(--danger);font-size:14px;margin-top:10px;display:none;}
 
@@ -182,10 +195,41 @@
           <span id="zelleTargetLabel">zelle@example.com</span>
           <button type="button" class="copy-btn" id="copyZelleBtn">Copy</button>
         </div>
-        <p class="note">Send this amount via Zelle to the contact above, using your <strong>player's full name</strong> in the memo. Then enter the confirmation number Zelle gave you below — Registration will not be be completed without full payment.</p>
+        <p class="note">Send this amount via Zelle to the contact above, using your <strong>player's full name</strong> in the memo. Then enter the confirmation number Zelle gave you below — we'll verify and confirm by email.</p>
       </div>
       <label>Zelle confirmation number (leave blank if paying later)</label>
       <input id="zelleRef" placeholder="e.g. AB12CD34">
+    </section>
+
+    <section class="group">
+      <h2>Waiver, Rules &amp; Consent</h2>
+      <p class="note" style="margin-top:0;">Please read the full Waiver, Rules &amp; Regulations below (scroll through all 7 pages) — the checkbox unlocks once you've reached the end.</p>
+      <div class="waiver-box" id="waiverBox">
+        <img src="waiver-1.jpg" alt="Waiver and Rules page 1" loading="lazy">
+        <img src="waiver-2.jpg" alt="Waiver and Rules page 2" loading="lazy">
+        <img src="waiver-3.jpg" alt="Waiver and Rules page 3" loading="lazy">
+        <img src="waiver-4.jpg" alt="Waiver and Rules page 4" loading="lazy">
+        <img src="waiver-5.jpg" alt="Waiver and Rules page 5" loading="lazy">
+        <img src="waiver-6.jpg" alt="Waiver and Rules page 6" loading="lazy">
+        <img src="waiver-7.jpg" alt="Waiver and Rules page 7" loading="lazy">
+        <div id="waiverEnd" style="height:1px;"></div>
+      </div>
+      <p class="note" id="waiverScrollHint">↑ Scroll through the document above to unlock the checkbox below.</p>
+      <a href="Rules_and_Regulations_Updated.pdf" target="_blank" rel="noopener" style="font-size:13px;">Open/download a copy of the Waiver &amp; Rules (PDF)</a>
+
+      <label style="display:flex;gap:10px;align-items:flex-start;margin-top:18px;">
+        <input type="checkbox" id="waiverAgree" required disabled style="width:auto;margin-top:3px;">
+        <span>I have read and agree to the Waiver, Rules &amp; Regulations, Concussion Awareness Acknowledgment, and Emergency Medical Treatment Authorization above. <span class="req">*</span></span>
+      </label>
+
+      <label style="display:flex;gap:10px;align-items:flex-start;margin-top:12px;">
+        <input type="checkbox" id="photoConsent" style="width:auto;margin-top:3px;">
+        <span>I also consent to the Photo, Video &amp; Media Release (optional — registration is not affected either way).</span>
+      </label>
+
+      <label>Type your full legal name as your signature <span class="req">*</span></label>
+      <input id="waiverSignature" placeholder="Full legal name" autocomplete="name">
+      <p class="note">By typing your name above and submitting this form, you are electronically signing the Waiver, Rules &amp; Regulations for the player named in this registration.</p>
     </section>
 
     <div class="error" id="formError">Please fill in all required fields.</div>
@@ -196,7 +240,7 @@
   <div class="success" id="successPanel">
     <div class="mark">⚽</div>
     <h2>You're registered</h2>
-    <p id="successText">Thanks! We've received your player's registration. Registration will be completed upon receiving full payment.</p>
+    <p id="successText">Thanks! We've received your player's registration. If you sent a Zelle payment, we'll confirm it by email once verified.</p>
   </div>
 </div>
 
@@ -211,16 +255,17 @@
     // under $75 and guessed U8 for the $50 tier below. Double check / edit.
     fees: {
       "U19": 100,
+      "U16": 75,
       "U14": 75,
       "U12": 75,
       "U10": 50,
       "U8": 50,
-      
+      "U6": 50
     },
-    zelleTarget: "melvindalesoccerclub@gmail.com",
-    ageGroups: ["U8", "U10", "U12", "U14", "U19"],
+    zelleTarget: "treasurer@melvindalesoccer.org",
+    ageGroups: ["U6", "U8", "U10", "U12", "U14", "U16", "U19"],
     // Paste the Web app URL you get from deploying apps-script.gs (see SETUP-INSTRUCTIONS.md)
-    scriptUrl: "https://script.google.com/macros/s/AKfycbxJv6J0OqvNAqIjXN8-rHtj5BXyS3Pm6RWcHQXqaR1As1yDdLEPE-xjEsD_-KdRF8MZ/exec"
+    scriptUrl: "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE"
   };
   // -----------------------------------------
 
@@ -267,6 +312,29 @@
     }).catch(() => {});
   });
 
+  // ---- Waiver scroll-to-unlock ----
+  const waiverAgree = document.getElementById('waiverAgree');
+  const waiverScrollHint = document.getElementById('waiverScrollHint');
+  const waiverEnd = document.getElementById('waiverEnd');
+  const waiverBox = document.getElementById('waiverBox');
+
+  function unlockWaiver() {
+    waiverAgree.disabled = false;
+    waiverScrollHint.classList.add('hidden');
+  }
+
+  if ('IntersectionObserver' in window) {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) unlockWaiver(); });
+    }, { root: waiverBox, threshold: 0.99 });
+    obs.observe(waiverEnd);
+  } else {
+    // Fallback for older browsers: plain scroll-position check
+    waiverBox.addEventListener('scroll', () => {
+      if (waiverBox.scrollTop + waiverBox.clientHeight >= waiverBox.scrollHeight - 8) unlockWaiver();
+    });
+  }
+
   const form = document.getElementById('regForm');
   const errorBox = document.getElementById('formError');
   const submitBtn = document.getElementById('submitBtn');
@@ -279,6 +347,19 @@
     }
     if (currentFee() == null) {
       errorBox.textContent = "Please select a valid age group so we can show the correct fee.";
+      errorBox.style.display = 'block';
+      return;
+    }
+    if (!waiverAgree.checked) {
+      errorBox.textContent = waiverAgree.disabled
+        ? "Please scroll through the full Waiver & Rules document before agreeing."
+        : "You must agree to the Waiver, Rules & Regulations to register.";
+      errorBox.style.display = 'block';
+      waiverBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (!document.getElementById('waiverSignature').value.trim()) {
+      errorBox.textContent = "Please type your full legal name as your signature.";
       errorBox.style.display = 'block';
       return;
     }
@@ -306,6 +387,10 @@
       fee: '$' + currentFee(),
       paymentMethod: 'Zelle',
       zelleRef: document.getElementById('zelleRef').value.trim(),
+      waiverAgreed: waiverAgree.checked ? 'Yes' : 'No',
+      waiverSignature: document.getElementById('waiverSignature').value.trim(),
+      waiverAgreedAt: new Date().toISOString(),
+      photoConsent: document.getElementById('photoConsent').checked ? 'Yes' : 'No',
     };
 
     try {
