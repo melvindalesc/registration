@@ -195,8 +195,7 @@
           <span id="zelleTargetLabel">zelle@example.com</span>
           <button type="button" class="copy-btn" id="copyZelleBtn">Copy</button>
         </div>
-        <p class="note">Send this amount via Zelle to the contact above, using your <strong>player's full name</strong> in the memo. Then enter the confirmation number Zelle gave you below — Registration is not 
-          completed until full payment is recevied.</p>
+        <p class="note">Send this amount via Zelle to the contact above, using your <strong>player's full name</strong> in the memo. Then enter the confirmation number Zelle gave you below — Registration is complete upon receiving full payment.</p>
       </div>
       <label>Zelle confirmation number (leave blank if paying later)</label>
       <input id="zelleRef" placeholder="e.g. AB12CD34">
@@ -206,13 +205,13 @@
       <h2>Waiver, Rules &amp; Consent</h2>
       <p class="note" style="margin-top:0;">Please read the full Waiver, Rules &amp; Regulations below (scroll through all 7 pages) — the checkbox unlocks once you've reached the end.</p>
       <div class="waiver-box" id="waiverBox">
-        <img src="waiver-1.jpg" alt="Waiver and Rules page 1" loading="lazy">
-        <img src="waiver-2.jpg" alt="Waiver and Rules page 2" loading="lazy">
-        <img src="waiver-3.jpg" alt="Waiver and Rules page 3" loading="lazy">
-        <img src="waiver-4.jpg" alt="Waiver and Rules page 4" loading="lazy">
-        <img src="waiver-5.jpg" alt="Waiver and Rules page 5" loading="lazy">
-        <img src="waiver-6.jpg" alt="Waiver and Rules page 6" loading="lazy">
-        <img src="waiver-7.jpg" alt="Waiver and Rules page 7" loading="lazy">
+        <img src="waiver-1.jpg" width="1020" height="1320" alt="Waiver and Rules page 1" loading="lazy">
+        <img src="waiver-2.jpg" width="1020" height="1320" alt="Waiver and Rules page 2" loading="lazy">
+        <img src="waiver-3.jpg" width="1020" height="1320" alt="Waiver and Rules page 3" loading="lazy">
+        <img src="waiver-4.jpg" width="1020" height="1320" alt="Waiver and Rules page 4" loading="lazy">
+        <img src="waiver-5.jpg" width="1020" height="1320" alt="Waiver and Rules page 5" loading="lazy">
+        <img src="waiver-6.jpg" width="1020" height="1320" alt="Waiver and Rules page 6" loading="lazy">
+        <img src="waiver-7.jpg" width="1020" height="1320" alt="Waiver and Rules page 7" loading="lazy">
         <div id="waiverEnd" style="height:1px;"></div>
       </div>
       <p class="note" id="waiverScrollHint">↑ Scroll through the document above to unlock the checkbox below.</p>
@@ -241,7 +240,7 @@
   <div class="success" id="successPanel">
     <div class="mark">⚽</div>
     <h2>You're registered</h2>
-    <p id="successText">Thanks! We've received your player's registration. Registration will be completed upon full payment confirmation.</p>
+    <p id="successText">Thanks! We've received your player's registration. Registration is complete upon receiving full payment.</p>
   </div>
 </div>
 
@@ -261,7 +260,7 @@
       "U10": 50,
       "U8": 50,
           },
-    zelleTarget: "melvindalesoccerclub@gmail.com",
+    zelleTarget: "treasurer@melvindalesoccer.org",
     ageGroups: ["U8", "U10", "U12", "U14", "U19"],
     // Paste the Web app URL you get from deploying apps-script.gs (see SETUP-INSTRUCTIONS.md)
     scriptUrl: "https://script.google.com/macros/s/AKfycbxJv6J0OqvNAqIjXN8-rHtj5BXyS3Pm6RWcHQXqaR1As1yDdLEPE-xjEsD_-KdRF8MZ/exec"
@@ -322,17 +321,25 @@
     waiverScrollHint.classList.add('hidden');
   }
 
+  function checkWaiverScroll() {
+    if (waiverBox.scrollTop + waiverBox.clientHeight >= waiverBox.scrollHeight - 12) unlockWaiver();
+  }
+
+  // Primary: plain scroll position check (most reliable across browsers)
+  waiverBox.addEventListener('scroll', checkWaiverScroll, { passive: true });
+
+  // Backup: IntersectionObserver, in case the box never becomes scrollable
+  // (e.g. a very tall/zoomed-out viewport) so scroll events wouldn't fire.
   if ('IntersectionObserver' in window) {
     const obs = new IntersectionObserver((entries) => {
       entries.forEach(entry => { if (entry.isIntersecting) unlockWaiver(); });
-    }, { root: waiverBox, threshold: 0.99 });
+    }, { root: waiverBox, threshold: 0, rootMargin: '0px 0px 40px 0px' });
     obs.observe(waiverEnd);
-  } else {
-    // Fallback for older browsers: plain scroll-position check
-    waiverBox.addEventListener('scroll', () => {
-      if (waiverBox.scrollTop + waiverBox.clientHeight >= waiverBox.scrollHeight - 8) unlockWaiver();
-    });
   }
+
+  // In case content is short enough to need no scrolling at all, or images
+  // are already cached and loaded, check once right away too.
+  window.addEventListener('load', checkWaiverScroll);
 
   const form = document.getElementById('regForm');
   const errorBox = document.getElementById('formError');
